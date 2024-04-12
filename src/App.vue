@@ -8,6 +8,12 @@ import { onMounted, provide, reactive, ref, watch } from 'vue'
 
   const items = ref([]);
 
+  const drawerOpen = ref(false);
+
+  const closeDrawer = () => {
+    drawerOpen.value = false
+  }
+
   const filters = reactive({
     sortBy: 'title',
     searchQuery: '',
@@ -104,7 +110,8 @@ import { onMounted, provide, reactive, ref, watch } from 'vue'
 </script>
 
 <template>
-<!--  <Drawer />-->
+  <Drawer v-if="drawerOpen" />
+
   <div class="bg-white w-4/5 m-auto rounded-xl shadow-xl mt-14">
     <Header/>
 
