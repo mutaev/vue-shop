@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, provide, reactive, ref, watch } from 'vue'
+import { computed, onMounted, provide, reactive, ref, watch } from 'vue'
   import axios from 'axios'
 
   import Header from '@/components/Header.vue'
@@ -11,6 +11,12 @@ import { onMounted, provide, reactive, ref, watch } from 'vue'
 
   const drawerOpen = ref(false);
 
+  const totalPrice = computed(
+    () => cart.value.reduce((acc, item) => acc + item.price, 0)
+  )
+
+  const vatPrice = computed(() => Math.round((totalPrice.value * 5) / 100 ))
+
   const closeDrawer = () => {
     drawerOpen.value = false
   }
@@ -19,13 +25,20 @@ import { onMounted, provide, reactive, ref, watch } from 'vue'
   }
 
   const addToCart = (item) => {
+    cart.value.push(item)
+    item.isAdded = true
+  }
+
+  const removeFromCart = (item) => {
+    cart.value.splice(cart.value.indexOf(item), 1)
+    item.isAdded = false
+  }
+
+  const onClickAddPlus = (item) => {
     if(!item.isAdded) {
-      cart.value.push(item)
-      item.isAdded = true
+      addToCart(item)
     } else {
-      cart.value.splice(
-        cart.value.indexOf(item)
-      , 1)
+      removeFromCart(item)
     }
     console.log(cart)
   }
@@ -121,17 +134,20 @@ import { onMounted, provide, reactive, ref, watch } from 'vue'
   })
   watch(filters, fetchItems)
 
-  provide('cartActions', {
+  provide('cart', {
     closeDrawer,
-    openDrawer
+    openDrawer,
+    cart,
+    addToCart,
+    removeFromCart,
   })
 </script>
 
 <template>
-  <Drawer v-if="drawerOpen"/>
+  <Drawer :total-price="totalPrice" :vat-price="vatPrice" v-if="drawerOpen"/>
 
   <div class="bg-white w-4/5 m-auto rounded-xl shadow-xl mt-14">
-    <Header @open-drawer="openDrawer"/>
+    <Header :total-price="totalPrice" @open-drawer="openDrawer"/>
 
     <div class="p-10">
       <div class="flex justify-between items-center">
@@ -157,7 +173,7 @@ import { onMounted, provide, reactive, ref, watch } from 'vue'
       </div>
 
       <div class="mt-10">
-        <CardList :items="items" @add-to-favorite="addToFavorite" @add-to-cart="addToCart"/>
+        <CardList :items="items" @add-to-favorite="addToFavorite" @add-to-cart="onClickAddPlus"/>
       </div>
     </div>
   </div>
