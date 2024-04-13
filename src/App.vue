@@ -8,6 +8,7 @@ import { computed, onMounted, provide, reactive, ref, watch } from 'vue'
 
   const items = ref([]);
   const cart = ref([]);
+  const isCreatingOrder = ref(false)
 
   const drawerOpen = ref(false);
 
@@ -32,6 +33,24 @@ import { computed, onMounted, provide, reactive, ref, watch } from 'vue'
   const removeFromCart = (item) => {
     cart.value.splice(cart.value.indexOf(item), 1)
     item.isAdded = false
+  }
+
+  const createOrder = async () => {
+    try {
+      isCreatingOrder.value = true
+      const { data } = await axios.post(`https://8b0c688acbe64a0b.mokky.dev/orders`, {
+        items: cart.value,
+        totalPrice: totalPrice.value,
+      })
+
+      cart.value = []
+
+      return data;
+    } catch (err) {
+      console.log(err)
+    } finally {
+      isCreatingOrder.value = false
+    }
   }
 
   const onClickAddPlus = (item) => {
@@ -144,7 +163,13 @@ import { computed, onMounted, provide, reactive, ref, watch } from 'vue'
 </script>
 
 <template>
-  <Drawer :total-price="totalPrice" :vat-price="vatPrice" v-if="drawerOpen"/>
+  <Drawer
+    @create-order="createOrder"
+    :total-price="totalPrice"
+    :vat-price="vatPrice"
+    v-if="drawerOpen"
+    :is-creating-order="isCreatingOrder.value"
+  />
 
   <div class="bg-white w-4/5 m-auto rounded-xl shadow-xl mt-14">
     <Header :total-price="totalPrice" @open-drawer="openDrawer"/>
