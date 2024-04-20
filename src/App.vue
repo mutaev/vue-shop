@@ -18,6 +18,10 @@ import { computed, onMounted, provide, reactive, ref, watch } from 'vue'
 
   const vatPrice = computed(() => Math.round((totalPrice.value * 5) / 100 ))
 
+  const cartIsEmpty = computed(() => cart.value.length === 0)
+
+  const cartButtonDisabled = computed(() => isCreatingOrder.value || cartIsEmpty.value)
+
   const closeDrawer = () => {
     drawerOpen.value = false
   }
@@ -148,10 +152,33 @@ import { computed, onMounted, provide, reactive, ref, watch } from 'vue'
   }
 
   onMounted(async () => {
+
+    const localCart = localStorage.getItem('cart');
+    cart.value = localCart ? JSON.parse(localCart) : [];
+
     await fetchItems();
     await fetchFavorites();
+
+    items.value = items.value.map((item) => ({
+      ...item,
+      isAdded: cart.value.some((cartItem) => cartItem.id === item.id)
+    }))
   })
   watch(filters, fetchItems)
+
+  watch(cart, () => {
+    items.value = items.value.map((item) => ({
+      ...item,
+      isAdded: false
+    }))
+  })
+
+  watch(cart, () => {
+    localStorage.setItem('cart', JSON.stringify(cart.value))
+
+  }, {
+    deep: true
+  })
 
   provide('cart', {
     closeDrawer,
@@ -168,7 +195,7 @@ import { computed, onMounted, provide, reactive, ref, watch } from 'vue'
     :total-price="totalPrice"
     :vat-price="vatPrice"
     v-if="drawerOpen"
-    :is-creating-order="isCreatingOrder.value"
+    :button-disabled="cartButtonDisabled"
   />
 
   <div class="bg-white w-4/5 m-auto rounded-xl shadow-xl mt-14">
