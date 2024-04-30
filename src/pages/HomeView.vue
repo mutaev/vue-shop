@@ -132,7 +132,7 @@ onMounted(async () => {
     <h2 class="text-3xl font-bold mb-8">Все кроссовки</h2>
 
     <div class="flex gap-4">
-      <select @change="onChangeSelect" class="py-2 px-3 border rounded-md outline-none">
+      <select @change="onChangeSelect" class="py-2 px-3 border border-sky-500 rounded-md outline-none bg-transparent">
         <option value="name">По названию</option>
         <option value="price">По цене (дешевые)</option>
         <option value="-price">По цене (дорогие)</option>
@@ -144,7 +144,7 @@ onMounted(async () => {
           @input="onChangeSearchInput"
           type="search"
           placeholder="Поиск..."
-          class="border rounded-md py-2 pl-11 pr-4 outline-none focus:border-gray-400"
+          class="border rounded-md py-2 pl-11 pr-4 outline-none border-sky-500"
         />
       </div>
     </div>

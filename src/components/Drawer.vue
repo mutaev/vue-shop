@@ -40,7 +40,7 @@ defineProps({
       <button
         :disabled="ButtonDisabled"
         @click="() => emit('createOrder')"
-        class=" mt-3 cursor-pointer disabled:bg-slate-300 bg-lime-500 w-full rounded-xl py-3 text-white hover:bg-lime-600 transition active:bg-lime-700">
+        class=" mt-3 cursor-pointer disabled:bg-slate-300 bg-sky-500 w-full rounded-xl py-3 text-white hover:bg-sky-600 transition active:bg-sky-700">
         Офорить заказ
       </button>
     </div>
