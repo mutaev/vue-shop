@@ -1,6 +1,6 @@
 <script setup>
 import CardList from '@/components/CardList.vue'
-import { inject, onMounted, reactive, ref, watch } from 'vue'
+import { inject, onMounted, provide, reactive, ref, watch } from 'vue'
 import axios from 'axios'
 
 const { addToCart, removeFromCart, cart } = inject('cart')
@@ -32,7 +32,7 @@ const addToFavorite = async (item) => {
   try {
     if (!item.isFavorite) {
       const obj = {
-        parentId: item.id
+        item_id: item.id,
       };
 
       item.isFavorite = true
@@ -125,6 +125,7 @@ onMounted(async () => {
     isAdded: cart.value.some((cartItem) => cartItem.id === item.id)
   }))
 })
+
 </script>
 
 <template>
